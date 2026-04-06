@@ -1,11 +1,10 @@
--- flip this to false if you want to turn Go off without deleting the file
 local enabled = true
 if not enabled then
   return {}
 end
 
 return {
-  -- 1) Ensure gopls is installed by mason-lspconfig
+  -- Install go with mason
   {
     "mason-org/mason-lspconfig.nvim",
     opts = function(_, opts)
@@ -17,19 +16,43 @@ return {
     end,
   },
 
-  -- 2) Configure gopls
+  -- install treesitter
+  {
+    "nvim-treesitter/nvim-treesitter",
+    opts = function(_, opts)
+      if type(opts.ensure_installed) == "table" then
+        vim.list_extend(opts.ensure_installed, {
+          "go",
+          "gomod",
+          "gowork",
+          "gosum",
+          "gotmpl",
+        })
+      end
+      return opts
+    end,
+  },
+
   {
     "neovim/nvim-lspconfig",
     opts = function(_, opts)
-      -- use your helper module from nvim_unix
       local ok, lsp = pcall(require, "lang_support.lsp_util")
       if not ok then
         return opts
       end
 
+      local root_pattern = lsp.root_pattern({ "go.work", "go.mod", ".git" })
+
       lsp.register("gopls", "go", {
         cmd = { "gopls" },
-        root_dir = lsp.root_pattern({ "go.work", "go.mod", ".git" }),
+        root_dir = root_pattern,
+
+        on_new_config = function(new_config, new_root_dir)
+          if vim.fn.filereadable(new_root_dir .. "/.tinygo") == 1 then
+            new_config.settings.gopls.buildFlags = { "-tags=tinygo" }
+          end
+        end,
+
         settings = {
           gopls = {
             staticcheck = true,

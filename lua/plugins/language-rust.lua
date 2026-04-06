@@ -1,11 +1,10 @@
--- Toggle this to false to disable Rust support
 local enabled = true
 if not enabled then
   return {}
 end
 
 return {
-  -- 1) Ensure rust-analyzer is installed via Mason
+  -- Install rust analyzer
   {
     "mason-org/mason-lspconfig.nvim",
     opts = function(_, opts)
@@ -15,7 +14,7 @@ return {
     end,
   },
 
-  -- 2) Ensure Treesitter parser is installed for highlighting
+  -- Treesitter parser is installed for highlighting
   {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)
@@ -25,7 +24,7 @@ return {
     end,
   },
 
-  -- 3) Configure Language Servers (LSP)
+  -- Configure lsp
   {
     "neovim/nvim-lspconfig",
     opts = function(_, opts)
@@ -43,7 +42,7 @@ return {
         settings = {
           ["rust-analyzer"] = {
             cargo = { allFeatures = true },
-            check = { command = "clippy" }, -- Use clippy for better diagnostics
+            check = { command = "clippy" },
             inlayHints = { locationLinks = false },
           },
         },

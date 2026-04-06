@@ -1,11 +1,10 @@
--- Toggle this to false to disable Web/Svelte support without deleting the file
 local enabled = true
 if not enabled then
   return {}
 end
 
 return {
-  -- 1) Ensure Svelte and supporting servers are installed by Mason
+  -- Install LSP
   {
     "mason-org/mason-lspconfig.nvim",
     opts = function(_, opts)
@@ -14,12 +13,13 @@ return {
         "html",
         "cssls",
         "ts_ls",
-        "svelte", -- Specifically ensures svelte-language-server is installed
+        "svelte",
       })
       return opts
     end,
   },
-  -- Treesitter for text highlighting
+
+  -- Install treesitter
   {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)
@@ -29,7 +29,7 @@ return {
     end,
   },
 
-  -- 2) Configure Language Servers (LSP)
+  -- LSP config
   {
     "neovim/nvim-lspconfig",
     opts = function(_, opts)
@@ -57,8 +57,6 @@ return {
           },
         },
       })
-
-      -- Include your other web servers here (html, cssls, ts_ls) as shown previously
 
       return opts
     end,

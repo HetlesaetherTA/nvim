@@ -39,3 +39,5 @@ vim.opt.termguicolors = true
 vim.g.matchup_matchparen_offscreen = { method = "popup" }
 vim.g.matchup_matchparen_deferred = 1
 vim.g.matchup_surround_enabled = 1
+
+vim.opt.switchbuf = "useopen,usetab"

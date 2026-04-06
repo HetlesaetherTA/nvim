@@ -1,11 +1,10 @@
--- Toggle this to false to disable Python support
 local enabled = true
 if not enabled then
   return {}
 end
 
 return {
-  -- 1) Ensure Python binaries are installed via Mason
+  -- Install python LSP
   {
     "mason-org/mason-lspconfig.nvim",
     opts = function(_, opts)
@@ -19,7 +18,7 @@ return {
     end,
   },
 
-  -- 2) Ensure Treesitter parser is installed for highlighting
+  -- Install treesitter for syntax highlighting
   {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)
@@ -29,7 +28,7 @@ return {
     end,
   },
 
-  -- 3) Configure Language Servers (LSP)
+  -- Configure lsp
   {
     "neovim/nvim-lspconfig",
     opts = function(_, opts)

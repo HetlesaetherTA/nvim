@@ -5,7 +5,7 @@ if not enabled then
 end
 
 return {
-  -- 1) Ensure servers are installed by Mason
+  -- Install web resources with mason
   {
     "mason-org/mason-lspconfig.nvim",
     opts = function(_, opts)
@@ -20,7 +20,7 @@ return {
     end,
   },
 
-  -- 2) Configure Language Servers (LSP)
+  -- Configure lsp
   {
     "neovim/nvim-lspconfig",
     opts = function(_, opts)

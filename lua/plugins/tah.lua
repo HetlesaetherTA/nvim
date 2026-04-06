@@ -1,5 +1,7 @@
 -- ~/.config/nvim/lua/plugins/tah.lua
 
+-- This is just my personal config seperated from the lazyvim & omarchy defaults
+
 return {
   -- SSH clipboard functionality
   {
@@ -26,7 +28,7 @@ return {
       local is_mac = vim.fn.has("mac") == 1
       local is_ssh = vim.env.SSH_TTY ~= nil
 
-      -- If we are NOT in SSH, use the native system clipboard
+      -- If NOT in SSH, use the native system clipboard
       if not is_ssh then
         if is_mac then
           -- macOS specific clipboard provider
@@ -47,10 +49,7 @@ return {
     "morhetz/gruvbox",
     lazy = false,
     priority = 1000,
-    config = function()
-      -- You can switch to gruvbox here if you want:
-      -- vim.cmd.colorscheme("gruvbox")
-    end,
+    config = function() end,
   },
 
   -- Fun
@@ -92,6 +91,25 @@ return {
     },
   },
 
+  -- Keep root dir static
+  {
+    "ahmedkhalf/project.nvim",
+    config = function()
+      require("project_nvim").setup({
+        manual_mode = false,
+
+        detection_methods = { "lsp", "pattern" },
+        patterns = { ".git", "_darcs", ".hg", ".bzr", ".svn", "Makefile", "package.json", "go.mod" },
+
+        ignore_lsp = {},
+
+        silent_chdir = true,
+
+        datapath = vim.fn.stdpath("data"),
+      })
+    end,
+  },
+
   -- Harpoon
   {
     "ThePrimeagen/harpoon",
@@ -112,7 +130,7 @@ return {
     end,
   },
 
-  -- nnn file manager (optional)
+  -- nnn file manager
   {
     "mcchrish/nnn.vim",
     cmd = { "NnnPicker", "NnnExplorer" },
@@ -136,7 +154,7 @@ return {
     event = "VeryLazy",
   },
 
-  -- Go helper (if you want it in addition to LazyVim's Go setup)
+  -- Gopher
   {
     "olexsmir/gopher.nvim",
     ft = "go",
