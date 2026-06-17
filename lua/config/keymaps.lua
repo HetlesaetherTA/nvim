@@ -15,16 +15,8 @@ end
 -- disable space in visual
 vim.api.nvim_set_keymap("v", "<Space>", "<Nop>", { noremap = true, silent = true })
 
--- jump 1 page {up: control+j, down: control+k}
-nnoremap("<c-j>", "<c-d>zz<cr>")
-nnoremap("<c-k>", "<c-u>zz<cr>")
-
--- search for file {local: space-p-f, git: control+p, grep: space-p-s}
--- vim.keymap.set('n', '<leader>pf', builtin.find_files, {})
--- vim.keymap.set('n', '<c-p>', builtin.git_files, {})
--- vim.keymap.set('n', '<leader>ps', function()
---   builtin.grep_string({ search = vim.fn.input("grep > ") });
--- end)
+vim.keymap.set("n", "<C-j>", "<C-d>zz", { desc = "Half page down and center" })
+vim.keymap.set("n", "<C-k>", "<C-u>zz", { desc = "Half page up and center" })
 
 -- swap current line with line {below: J, abolve: K}
 vim.keymap.set("n", "J", ":m .+1<CR>==", { noremap = true, silent = true })
@@ -33,7 +25,6 @@ vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { noremap = true, silent = true })
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { noremap = true, silent = true })
 
 -- navigate back (n) and forward (n) in search array
-vim.keymap.set("n", "n", "nzzzv")
 vim.keymap.set("n", "n", "nzzzv")
 
 -- Save to clipboard
@@ -49,3 +40,34 @@ vim.keymap.set("n", "U", "<C-r>")
 vim.keymap.set("n", "<leader>g", function()
   vim.diagnostic.open_float(nil, { focus = true, border = "rounded" })
 end, { desc = "Line diagnostics" })
+
+vim.keymap.set("n", "<leader>fa", function()
+  -- Grab the active fold level setting for the current window
+  local current_foldlevel = vim.wo.foldlevel
+
+  -- If foldlevel is greater than 0, things are expanded. Collapse everything.
+  if current_foldlevel > 0 then
+    vim.cmd("normal! zM")
+    vim.wo.foldlevel = 0
+    print("󰁂 All folds collapsed")
+  else
+    -- If foldlevel is 0, everything is hidden. Expand everything back out.
+    vim.cmd("normal! zR")
+    vim.wo.foldlevel = 99
+    print("󰁃 All folds expanded")
+  end
+end, { desc = "Toggle Fold All (Toggle zM/zR)" })
+
+vim.keymap.set("n", "<C-f>", "zA", { desc = "Toggle code fold and propegate" })
+
+-- Go to Definition in a VERTICAL split
+vim.keymap.set("n", "gv", function()
+  vim.cmd("vsplit")
+  vim.lsp.buf.definition()
+end, { desc = "LSP: Definition in Vertical Split" })
+
+-- Go to Definition in a HORIZONTAL split
+vim.keymap.set("n", "gs", function()
+  vim.cmd("split")
+  vim.lsp.buf.definition()
+end, { desc = "LSP: Definition in Horizontal Split" })
