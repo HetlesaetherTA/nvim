@@ -127,9 +127,24 @@ return {
       map("n", "<C-e>", function()
         harpoon.ui:toggle_quick_menu(harpoon:list())
       end, { desc = "Harpoon quick menu" })
+
+      map("n", "<leader>1", function()
+        harpoon:list():select(1)
+      end, { desc = "Harpoon file 1" })
+
+      map("n", "<leader>2", function()
+        harpoon:list():select(2)
+      end, { desc = "Harpoon file 2" })
+
+      map("n", "<leader>3", function()
+        harpoon:list():select(3)
+      end, { desc = "Harpoon file 3" })
+
+      map("n", "<leader>4", function()
+        harpoon:list():select(4)
+      end, { desc = "Harpoon file 4" })
     end,
   },
-
   -- nnn file manager
   {
     "mcchrish/nnn.vim",
@@ -169,6 +184,36 @@ return {
           vim.cmd("silent! GoInstallDeps")
         end,
       })
+    end,
+  },
+
+  --[[
+      Let's you spawn a neovim instance for browser 
+      input boxes 
+
+      Requires firenvim [browser extension](https://chromewebstore.google.com/detail/firenvim/egpjdkipkomnmjhjmdamaniclmdlobbo?hl=en-US)
+  --]]
+  {
+    "glacambre/firenvim",
+    lazy = false,
+    build = function()
+      vim.fn["firenvim#install"](0)
+    end,
+    config = function()
+      vim.g.firenvim_config = {
+        globalSettings = {
+          alt = "all",
+        },
+        localSettings = {
+          [".*"] = {
+            cmdline = "neovim",
+            content = "text",
+            priority = 0,
+            selector = "textarea",
+            takeover = "always",
+          },
+        },
+      }
     end,
   },
 }
