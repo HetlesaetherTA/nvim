@@ -30,6 +30,15 @@ vim.keymap.set("n", "n", "nzzzv")
 -- Save to clipboard
 vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
 
+-- Refactoring stuff
+vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "LSP Code Actions (Extract/Interface)" })
+vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "LSP Safe Global Rename" })
+
+vim.keymap.set("n", "<leader>fs", "<cmd>Telescope lsp_document_symbols<cr>", { desc = "File Symbols Outline" })
+vim.keymap.set("x", "<leader>re", function()
+  require("refactoring").refactor("Extract Function")
+end)
+
 -- move 1 tab {left: <, right: >}
 vim.keymap.set("v", ">", ">gv")
 vim.keymap.set("v", "<", "<gv")
