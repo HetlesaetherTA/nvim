@@ -41,3 +41,8 @@ vim.g.matchup_matchparen_deferred = 1
 vim.g.matchup_surround_enabled = 1
 
 vim.opt.switchbuf = "useopen,usetab"
+
+-- Complete lockdown on the old built-in SQL plugin maps
+vim.g.omni_sql_no_default_maps = 1
+vim.g.ftplugin_sql_omni_key_right = ""
+vim.g.ftplugin_sql_omni_key_left = ""
