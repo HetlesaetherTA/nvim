@@ -171,6 +171,8 @@ return {
     ft = { "go", "gomod" },
     config = function()
       require("go").setup({
+        go_install = false,
+        null_printf = true,
         lsp_cfg = false,
         lsp_fmt = false,
         gofmt = "",

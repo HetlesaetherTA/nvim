@@ -3,6 +3,23 @@
 -- This is just my personal config seperated from the lazyvim & omarchy defaults
 
 return {
+  {
+    "LazyVim/LazyVim",
+    opts = {
+      news = {
+        lazyvim = false,
+        neovim = false,
+      },
+    },
+  },
+  {
+    "folke/snacks.nvim",
+    opts = {
+      scroll = {
+        enabled = false, -- Disable scrolling animations
+      },
+    },
+  },
   -- SSH clipboard functionality
   {
     "ojroques/nvim-osc52",
@@ -43,13 +60,6 @@ return {
         vim.opt.clipboard = "unnamedplus"
       end
     end,
-  },
-  -- Extra colorscheme
-  {
-    "morhetz/gruvbox",
-    lazy = false,
-    priority = 1000,
-    config = function() end,
   },
 
   -- Fun
@@ -145,14 +155,6 @@ return {
       end, { desc = "Harpoon file 4" })
     end,
   },
-  -- nnn file manager
-  {
-    "mcchrish/nnn.vim",
-    cmd = { "NnnPicker", "NnnExplorer" },
-    keys = {
-      { "<leader>n", "<cmd>NnnPicker<cr>", desc = "nnn picker" },
-    },
-  },
 
   -- Colorizer
   {
@@ -169,51 +171,9 @@ return {
     event = "VeryLazy",
   },
 
-  -- Gopher
   {
-    "olexsmir/gopher.nvim",
-    ft = "go",
-    dependencies = { "nvim-lua/plenary.nvim" },
-    config = function(_, opts)
-      require("gopher").setup(opts or {})
-      local group = vim.api.nvim_create_augroup("GopherSetup", { clear = true })
-      vim.api.nvim_create_autocmd("FileType", {
-        group = group,
-        pattern = "go",
-        callback = function()
-          vim.cmd("silent! GoInstallDeps")
-        end,
-      })
-    end,
-  },
-
-  --[[
-      Let's you spawn a neovim instance for browser 
-      input boxes 
-
-      Requires firenvim [browser extension](https://chromewebstore.google.com/detail/firenvim/egpjdkipkomnmjhjmdamaniclmdlobbo?hl=en-US)
-  --]]
-  {
-    "glacambre/firenvim",
-    lazy = false,
-    build = function()
-      vim.fn["firenvim#install"](0)
-    end,
-    config = function()
-      vim.g.firenvim_config = {
-        globalSettings = {
-          alt = "all",
-        },
-        localSettings = {
-          [".*"] = {
-            cmdline = "neovim",
-            content = "text",
-            priority = 0,
-            selector = "textarea",
-            takeover = "always",
-          },
-        },
-      }
-    end,
+    "stevearc/oil.nvim",
+    opts = {},
+    dependencies = { "nvim-tree/nvim-web-devicons" },
   },
 }

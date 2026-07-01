@@ -1,16 +1,9 @@
 -- Keymaps are automatically loaded on the VeryLazy event
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
-local nnoremap = require("config/helperKeymaps").nnoremap
--- local builtin = require("telescope.builtin")
 
--- file explorer (netrw)
--- Check if 'nnn' is installed
-if vim.fn.executable("nnn") == 1 then
-  vim.api.nvim_set_keymap("n", "<leader>pv", ":NnnPicker<CR>", { noremap = true, silent = true })
-else
-  vim.api.nvim_set_keymap("n", "<leader>pv", "<cmd>Ex<CR>", { noremap = true, silent = true })
-end
+vim.keymap.set("n", "<leader>.", "<cmd>Telescope buffers<cr>", { desc = "Search buffers" })
+vim.keymap.set("n", "<leader>,", "<cmd>Oil<cr>", { desc = "Open parent directory" })
 
 -- disable space in visual
 vim.api.nvim_set_keymap("v", "<Space>", "<Nop>", { noremap = true, silent = true })

@@ -13,7 +13,7 @@ return {
       vim.list_extend(opts.ensure_installed, {
         "html",
         "cssls",
-        "ts_ls",
+        "vtsls",
         "svelte",
       })
       return opts
@@ -23,55 +23,61 @@ return {
   -- Configure lsp
   {
     "neovim/nvim-lspconfig",
-    opts = function(_, opts)
-      local ok, lsp = pcall(require, "lang_support.lsp_util")
-      if not ok then
-        return opts
-      end
-
-      local web_root = lsp.root_pattern({ "package.json", "tsconfig.json", "jsconfig.json", ".git" })
+    init = function()
+      -- Inject servers directly into LazyVim's global option structure safely
+      local lsp_opts =
+        require("lazy.core.plugin").values(require("lazy.core.config").plugins["nvim-lspconfig"], "opts", false)
+      lsp_opts.servers = lsp_opts.servers or {}
 
       -- HTML configuration
-      lsp.register("html", "html", {
+      lsp_opts.servers.html = {
         cmd = { "vscode-html-language-server", "--stdio" },
-        root_dir = web_root,
+        root_dir = function(fname)
+          return require("lspconfig.util").root_pattern("package.json", "tsconfig.json", "jsconfig.json", ".git")(fname)
+        end,
         settings = {
           html = {
             format = { enable = true, wrapLineLength = 120 },
             suggest = { html5 = true },
           },
         },
-      })
+      }
 
       -- CSS / SCSS / LESS configuration
-      lsp.register("cssls", { "css", "scss", "less" }, {
+      lsp_opts.servers.cssls = {
         cmd = { "vscode-css-language-server", "--stdio" },
-        root_dir = web_root,
+        root_dir = function(fname)
+          return require("lspconfig.util").root_pattern("package.json", "tsconfig.json", "jsconfig.json", ".git")(fname)
+        end,
         settings = {
           css = { validate = true, format = { enable = true } },
           scss = { validate = true, format = { enable = true } },
         },
-      })
+      }
 
       -- TypeScript / JavaScript configuration
-      lsp.register("ts_ls", { "typescript", "javascript", "javascriptreact", "typescriptreact" }, {
-        cmd = { "typescript-language-server", "--stdio" },
-        root_dir = web_root,
+      lsp_opts.servers.vtsls = {
+        cmd = { "vtsls", "--stdio" },
+        root_dir = function(fname)
+          return require("lspconfig.util").root_pattern("package.json", "tsconfig.json", "jsconfig.json", ".git")(fname)
+        end,
         settings = {
           typescript = {
-            inlayHints = { includeInlayParameterNameHints = "literals" },
+            inlayHints = {
+              parameterNames = { enabled = "all" },
+            },
             preferences = { quoteStyle = "single" },
           },
         },
-      })
+      }
 
       -- Svelte configuration
-      lsp.register("svelte", "svelte", {
+      lsp_opts.servers.svelte = {
         cmd = { "svelteserver", "--stdio" },
-        root_dir = web_root,
-      })
-
-      return opts
+        root_dir = function(fname)
+          return require("lspconfig.util").root_pattern("package.json", "tsconfig.json", "jsconfig.json", ".git")(fname)
+        end,
+      }
     end,
   },
 }

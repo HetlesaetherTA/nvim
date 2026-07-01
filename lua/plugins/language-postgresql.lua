@@ -5,18 +5,30 @@ if not enabled then
 end
 
 return {
-  -- postgres interface
   {
-    "mason-org/mason-lspconfig.nvim",
-    opts = function(_, opts)
-      opts.ensure_installed = opts.ensure_installed or {}
-      if not vim.tbl_contains(opts.ensure_installed, "sqls") then
-        table.insert(opts.ensure_installed, "sqls")
-      end
-      return opts
-    end,
+    "nanotee/sqls.nvim",
+    lazy = true,
   },
 
+  -- You need to define connections in ~/.config/sqls/config.yml
+  config = function()
+    local lspconfig = require("lspconfig")
+
+    lspconfig.sqls.setup({
+      cmd = { "sqls" },
+      filetypes = { "sql", "go" },
+      root_dir = lspconfig.util.root_pattern(".sqls.yml", "sqls.yml", ".git", "go.mod"),
+
+      on_attach = function(client, bufnr)
+        local status, sqls = pcall(require, "sqls")
+        if status then
+          sqls.on_attach(client, bufnr)
+        else
+          vim.notify("sqls.nvim not found, skipping setup", vim.log.levels.WARN)
+        end
+      end,
+    })
+  end,
   -- linter
   {
     "mason-org/mason.nvim",
@@ -43,72 +55,28 @@ return {
   {
     "stevearc/conform.nvim",
     optional = true,
-    opts = {
-      formatters_by_ft = {
-        sql = { "pg_format" },
-        pgsql = { "pg_format" },
-      },
-      formatters = {
-        pg_format = {
-          args = {
-            "--spaces",
-            "2",
-            "--keyword-case",
-            "2",
-            "--wrap-limit",
-            "120",
-            "--wrap-after",
-            "1",
-            "-w",
-            "0",
-            "-C",
-            "--no-space-function",
-          },
-        },
-      },
-    },
-  },
-
-  -- lsp config
-  {
-    "nanotee/sqls.nvim",
-    lazy = true,
-  },
-
-  {
-    "neovim/nvim-lspconfig",
-    dependencies = { "nanotee/sqls.nvim" },
     opts = function(_, opts)
-      local ok, lsp = pcall(require, "lang_support.lsp_util")
-      if not ok then
-        return opts
-      end
+      opts.formatters_by_ft = opts.formatters_by_ft or {}
+      opts.formatters_by_ft.sql = { "pg_format" }
+      opts.formatters_by_ft.pgsql = { "pg_format" }
 
-      local sql_root = lsp.root_pattern({ ".git", "go.mod", "sqlc.yaml", "migrations/*.sql", "queries/*.sql" })
-
-      lsp.register("sqls", "sql", {
-        cmd = { "sqls" },
-        filetypes = { "sql", "go" },
-        root_dir = sql_root,
-        on_attach = function(client, bufnr)
-          local companion_ok, sqls_companion = pcall(require, "sqls")
-          if companion_ok then
-            sqls_companion.on_attach(client, bufnr)
-          end
-        end,
-        settings = {
-          sqls = {
-            connections = {
-              -- You can add more connection by copying line below
-              {
-                driver = "postgresql",
-                dataSourceName = "host=127.0.0.1 port=5432 user=auth_app_user password=thisisatemporarypassword dbname=main sslmode=disable",
-              },
-            },
-          },
+      opts.formatters = opts.formatters or {}
+      opts.formatters.pg_format = {
+        args = {
+          "--spaces",
+          "2",
+          "--keyword-case",
+          "2",
+          "--wrap-limit",
+          "120",
+          "--wrap-after",
+          "1",
+          "-w",
+          "0",
+          "-C",
+          "--no-space-function",
         },
-      })
-
+      }
       return opts
     end,
   },
@@ -116,7 +84,7 @@ return {
   -- postges UI (view schemas and run queries)
   {
     "tpope/vim-dadbod",
-    lazy = true,
+    lazy = false,
   },
   {
     "kristijanhusak/vim-dadbod-ui",
@@ -125,7 +93,7 @@ return {
       { "<leader>db", "<cmd>DBUIToggle<cr>", desc = "Toggle Database Sidebar" },
     },
     init = function()
-      vim.g.db_ui_save_location = vim.fn.stdpath("config") .. "/db_ui"
+      vim.g.db_ui_save_location = "/tmp"
       vim.g.db_ui_show_database_value = 1
 
       vim.api.nvim_create_autocmd("FileType", {

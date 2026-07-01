@@ -13,6 +13,7 @@ return {
       if not vim.tbl_contains(opts.ensure_installed, "mdformat") then
         table.insert(opts.ensure_installed, "mdformat")
       end
+      return opts
     end,
   },
 
@@ -26,6 +27,7 @@ return {
           table.insert(opts.ensure_installed, p)
         end
       end
+      return opts
     end,
   },
 
@@ -51,6 +53,7 @@ return {
       },
     },
   },
+
   {
     "epwalsh/obsidian.nvim",
     version = "*",
@@ -68,7 +71,6 @@ return {
       },
       ui = { enable = false },
     },
-
     keys = {
       {
         "<leader>osf",
@@ -89,21 +91,21 @@ return {
 
   {
     "stevearc/conform.nvim",
-    opts = {
-      formatters_by_ft = {
-        markdown = { "mdformat" },
-      },
-      formatters = {
-        mdformat = {
-          args = { "--number", "--wrap", "80" },
-        },
-      },
-    },
+    opts = function(_, opts)
+      opts.formatters_by_ft = opts.formatters_by_ft or {}
+      opts.formatters_by_ft.markdown = { "mdformat" }
+
+      opts.formatters = opts.formatters or {}
+      opts.formatters.mdformat = {
+        args = { "--number", "--wrap", "80" },
+      }
+      return opts
+    end,
   },
 
   {
     "neovim/nvim-lspconfig",
-    opts = function()
+    opts = function(_, opts)
       vim.api.nvim_create_autocmd("FileType", {
         pattern = "markdown",
         callback = function()
@@ -127,6 +129,7 @@ return {
           end
         end,
       })
+      return opts
     end,
   },
 }
