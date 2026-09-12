@@ -25,6 +25,10 @@ vim.opt.hlsearch = false
 
 vim.g.go_asmfmt_autosave = 0
 
+vim.lsp.inlay_hint.enable(false)
+
+vim.lsp.inlay_hint.enable(false)
+
 vim.diagnostic.config({
   virtual_text = true,
   signs = true,
