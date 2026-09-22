@@ -4,7 +4,7 @@ if not enabled then
 end
 
 return {
-  -- Install rust analyzer
+  -- Install Rust LSP via Mason
   {
     "mason-org/mason-lspconfig.nvim",
     opts = function(_, opts)
@@ -14,30 +14,28 @@ return {
     end,
   },
 
-  -- Treesitter parser is installed for highlighting
+  -- Syntax Highlighting
   {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)
+      opts.ensure_installed = opts.ensure_installed or {}
       if type(opts.ensure_installed) == "table" then
         vim.list_extend(opts.ensure_installed, { "rust", "ron" })
       end
+      return opts
     end,
   },
 
-  -- Configure lsp
+  -- Configure LSP
   {
     "neovim/nvim-lspconfig",
     opts = function(_, opts)
-      local ok, lsp = pcall(require, "lang_support.lsp_util")
-      if not ok then
-        return opts
-      end
+      opts.servers = opts.servers or {}
 
-      -- rust-analyzer configuration
-      lsp.register("rust_analyzer", "rust", {
+      opts.servers.rust_analyzer = {
         cmd = { "rust-analyzer" },
-        root_dir = function(buf)
-          return vim.fs.root(buf, { "Cargo.toml", "rust-project.json", ".git" })
+        root_dir = function(bufnr)
+          return vim.fs.root(bufnr, { "Cargo.toml", "rust-project.json", ".git" })
         end,
         settings = {
           ["rust-analyzer"] = {
@@ -46,7 +44,7 @@ return {
             inlayHints = { locationLinks = false },
           },
         },
-      })
+      }
 
       return opts
     end,
