@@ -204,12 +204,10 @@ return {
 
   {
     "neovim/nvim-lspconfig",
-    opts = function(_, opts)
-      local ok, lsp = pcall(require, "lang_support.lsp_util")
-      if not ok then
-        return opts
-      end
+    config = function()
+      local lspconfig = require("lspconfig")
 
+      -- Auto-organize imports and format on save
       vim.api.nvim_create_autocmd("BufWritePre", {
         pattern = "*.go",
         callback = function()
@@ -229,14 +227,15 @@ return {
         end,
       })
 
-      local root_pattern = lsp.root_pattern({ "go.work", "go.mod", ".git" })
-
-      lsp.register("gopls", "go", {
+      -- Directly execute gopls setup
+      lspconfig.gopls.setup({
         cmd = { "gopls" },
-        root_dir = root_pattern,
+        root_dir = lspconfig.util.root_pattern("go.work", "go.mod", ".git"),
 
         on_new_config = function(new_config, new_root_dir)
           if vim.fn.filereadable(new_root_dir .. "/.tinygo") == 1 then
+            new_config.settings = new_config.settings or {}
+            new_config.settings.gopls = new_config.settings.gopls or {}
             new_config.settings.gopls.buildFlags = { "-tags=tinygo" }
           end
         end,
@@ -259,8 +258,6 @@ return {
           },
         },
       })
-
-      return opts
     end,
   },
 }

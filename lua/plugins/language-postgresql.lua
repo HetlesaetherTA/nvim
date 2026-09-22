@@ -8,27 +8,26 @@ return {
   {
     "nanotee/sqls.nvim",
     lazy = true,
+    config = function()
+      local lspconfig = require("lspconfig")
+
+      lspconfig.sqls.setup({
+        cmd = { "sqls" },
+        filetypes = { "sql", "go" },
+        root_dir = lspconfig.util.root_pattern(".sqls.yml", "sqls.yml", ".git", "go.mod"),
+
+        on_attach = function(client, bufnr)
+          local status, sqls = pcall(require, "sqls")
+          if status then
+            sqls.on_attach(client, bufnr)
+          else
+            vim.notify("sqls.nvim not found, skipping setup", vim.log.levels.WARN)
+          end
+        end,
+      })
+    end,
   },
 
-  -- You need to define connections in ~/.config/sqls/config.yml
-  config = function()
-    local lspconfig = require("lspconfig")
-
-    lspconfig.sqls.setup({
-      cmd = { "sqls" },
-      filetypes = { "sql", "go" },
-      root_dir = lspconfig.util.root_pattern(".sqls.yml", "sqls.yml", ".git", "go.mod"),
-
-      on_attach = function(client, bufnr)
-        local status, sqls = pcall(require, "sqls")
-        if status then
-          sqls.on_attach(client, bufnr)
-        else
-          vim.notify("sqls.nvim not found, skipping setup", vim.log.levels.WARN)
-        end
-      end,
-    })
-  end,
   -- linter
   {
     "mason-org/mason.nvim",

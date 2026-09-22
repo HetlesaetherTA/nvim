@@ -4,7 +4,7 @@ if not enabled then
 end
 
 return {
-  -- Install python LSP
+  -- Install Python LSPs via Mason
   {
     "mason-org/mason-lspconfig.nvim",
     opts = function(_, opts)
@@ -18,54 +18,51 @@ return {
     end,
   },
 
-  -- Install treesitter for syntax highlighting
+  -- Syntax Highlighting
   {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)
+      opts.ensure_installed = opts.ensure_installed or {}
       if type(opts.ensure_installed) == "table" then
         vim.list_extend(opts.ensure_installed, { "python" })
       end
+      return opts
     end,
   },
 
-  -- Configure lsp
+  -- Configure LSP Servers directly in opts.servers
   {
     "neovim/nvim-lspconfig",
     opts = function(_, opts)
-      local ok, lsp = pcall(require, "lang_support.lsp_util")
-      if not ok then
-        return opts
-      end
+      opts.servers = opts.servers or {}
 
-      -- Helper for python root detection
-      local function get_py_root(buf)
-        return vim.fs.root(buf, { "pyproject.toml", "setup.cfg", "setup.py", ".git" })
-          or vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf), ":p:h")
+      -- Root directory helper
+      local function get_py_root(bufnr)
+        return vim.fs.root(bufnr, { "pyproject.toml", "setup.cfg", "setup.py", ".git" })
+          or vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":p:h")
       end
 
       -- Pyright (types + completion)
-      lsp.register("pyright", "python", {
-        cmd = { "pyright-langserver", "--stdio" },
+      opts.servers.pyright = {
         root_dir = get_py_root,
-      })
+      }
 
       -- Ruff (diagnostics/code actions)
-      lsp.register("ruff", "python", {
+      opts.servers.ruff = {
         cmd = { "ruff", "server" },
         root_dir = get_py_root,
-      })
+      }
 
       -- Jedi (completion/hover)
-      lsp.register("jedi_language_server", "python", {
-        cmd = { "jedi-language-server" },
+      opts.servers.jedi_language_server = {
         root_dir = get_py_root,
-        initializationOptions = {
+        init_options = {
           diagnostics = { enable = false },
           hover = { enable = true },
           completion = { disableSnippets = false },
           markupKindPreferred = "markdown",
         },
-      })
+      }
 
       return opts
     end,
