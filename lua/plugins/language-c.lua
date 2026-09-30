@@ -4,7 +4,7 @@ if not enabled then
 end
 
 return {
-  -- Install formatters/debuggers via Mason
+  -- Install formatters, debuggers, and LSP servers via Mason
   {
     "mason-org/mason.nvim",
     opts = function(_, opts)
@@ -12,9 +12,28 @@ return {
       vim.list_extend(opts.ensure_installed, {
         "clang-format",
         "codelldb",
+        "clangd", -- Added LSP server for C/C++
       })
       return opts
     end,
+  },
+
+  -- Configure LSP for C code suggestions
+  {
+    "neovim/nvim-lspconfig",
+    opts = {
+      servers = {
+        clangd = {
+          cmd = {
+            "clangd",
+            "--background-index",
+            "--clang-tidy",
+            "--completion-style=detailed",
+            "--header-insertion=iwyu",
+          },
+        },
+      },
+    },
   },
 
   -- Syntax Highlighting
