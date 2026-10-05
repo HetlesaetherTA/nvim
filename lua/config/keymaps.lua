@@ -12,8 +12,8 @@ vim.keymap.set("n", "<C-j>", "<C-d>zz", { desc = "Half page down and center" })
 vim.keymap.set("n", "<C-k>", "<C-u>zz", { desc = "Half page up and center" })
 
 -- swap current line with line {below: J, abolve: K}
-vim.keymap.set("n", "J", ":m .+1<CR>==", { noremap = true, silent = true })
-vim.keymap.set("n", "K", ":m .-2<CR>==", { noremap = true, silent = true })
+-- vim.keymap.set("n", "J", ":m .+1<CR>==", { noremap = true, silent = true })
+-- vim.keymap.set("n", "K", ":m .-2<CR>==", { noremap = true, silent = true })
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { noremap = true, silent = true })
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { noremap = true, silent = true })
 
